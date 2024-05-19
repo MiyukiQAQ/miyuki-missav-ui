@@ -15,21 +15,21 @@
     </el-button>
   </div>
   <el-table :data="tableData" style="width: 100%">
-    <el-table-column label="Serial">
+    <el-table-column width="240" label="Serial">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.serial }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Url">
+    <el-table-column width="450" label="Url">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <el-link @click="openPage(scope.row.url)">{{ scope.row.url }}</el-link>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Title">
+    <el-table-column width="400" label="Title">
       <template #default="scope">
         <el-popover effect="light" trigger="hover" placement="top" width="auto">
           <template #default>
@@ -41,14 +41,14 @@
         </el-popover>
       </template>
     </el-table-column>
-    <el-table-column label="Actress">
+    <el-table-column width="160" label="Actress">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.actress }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="ReleaseDate">
+    <el-table-column width="130" label="ReleaseDate">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.releaseDate }}</span>

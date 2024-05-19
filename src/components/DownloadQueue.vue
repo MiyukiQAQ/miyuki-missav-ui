@@ -31,11 +31,12 @@ const initTableData = () => {
   <el-table :data="tableData" style="width: 100%">
     <el-table-column label="Status">
       <template #default="scope">
-        <div style="display: flex; align-items: center">
+        <div>
           <div v-if="scope.row.status === 'downloading'">
             <div class="loading-container">
               <div class="loading-circle"></div>
             </div>
+            downloading...
           </div>
           <div v-else-if="scope.row.status === 'complete'">✅ complete</div>
           <div v-else-if="scope.row.status === 'error'">❌ error</div>
