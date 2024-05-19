@@ -12,6 +12,7 @@
     <el-menu-item index="movies">Movies</el-menu-item>
     <el-menu-item index="collection">Collection</el-menu-item>
     <el-menu-item index="playlist">Playlist</el-menu-item>
+    <el-menu-item index="downloadQueue">Download Queue</el-menu-item>
   </el-menu>
 </template>
 

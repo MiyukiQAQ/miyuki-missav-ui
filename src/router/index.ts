@@ -3,8 +3,8 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 export const constRouter:Array<RouteRecordRaw> = [
     {
-        path: '/home',
-        component: () => import('../components/Home.vue') ,
+        path: '/downloadQueue',
+        component: () => import('../components/DownloadQueue.vue') ,
     },
     {
         path: '/movies',

@@ -1,20 +1,35 @@
 <template>
+  <div style="display: flex; justify-content: center;">
+    <el-input
+        v-model="url"
+        style="width: 400px"
+        placeholder="movie url here"
+        clearable
+    />
+    <el-button
+        v-loading="isLoadingParse"
+        size="default"
+        type="success"
+        @click="handleParseUrl">
+      Parse
+    </el-button>
+  </div>
   <el-table :data="tableData" style="width: 100%">
-    <el-table-column label="Serial" >
+    <el-table-column label="Serial">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.serial }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Url" >
+    <el-table-column label="Url">
       <template #default="scope">
-        <div style="display: flex; align-items: center" >
-          <el-link @click="openPage(scope.row.url)">{{scope.row.url}}</el-link>
+        <div style="display: flex; align-items: center">
+          <el-link @click="openPage(scope.row.url)">{{ scope.row.url }}</el-link>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Title" >
+    <el-table-column label="Title">
       <template #default="scope">
         <el-popover effect="light" trigger="hover" placement="top" width="auto">
           <template #default>
@@ -26,53 +41,46 @@
         </el-popover>
       </template>
     </el-table-column>
-    <el-table-column label="Actress" >
+    <el-table-column label="Actress">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.actress }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="ReleaseDate" >
+    <el-table-column label="ReleaseDate">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.releaseDate }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Collected" >
+    <el-table-column label="Collected">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.collected }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Playlist" >
+    <el-table-column label="Playlist">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <span>{{ scope.row.playlist }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Operations" >
+    <el-table-column label="Operations">
       <template #default="scope">
         <el-button
             size="small"
             type="success"
-            @click="handleEdit(scope.$index, scope.row)">
+            @click="handleDownload(scope.row)">
           Download
         </el-button>
         <el-button
             size="small"
-            type="primary"
-            @click="handleDelete(scope.$index, scope.row)"
-        >
-          Edit
-        </el-button>
-        <el-button
-            size="small"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.row)"
         >
           Delete
         </el-button>
@@ -82,6 +90,9 @@
 </template>
 
 <script lang="ts" setup>
+import {onMounted, ref} from 'vue';
+import AxiosHttp from "../http/AxiosHttp.ts";
+import {ElMessage} from 'element-plus'
 
 interface Movie {
   serial: string
@@ -93,70 +104,67 @@ interface Movie {
   playlist: string
   type: string
   description: string
-  tag: string[]
 }
 
-const handleEdit = (index: number, row: Movie) => {
-  console.log(index, row)
+let isLoadingParse = ref(false)
+
+const url = ref()
+
+let tableData = ref<Movie[]>([]);
+
+const handleDownload = (row: Movie) => {
+  AxiosHttp.post('/api/movie/' + row.serial + '/download').then((res) => {
+    if (res) {
+      ElMessage.success('movie successfully added to download queue')
+    }
+  }).catch((error) => {
+    ElMessage.error(error)
+  }).finally(() => {
+
+  })
 }
-const handleDelete = (index: number, row: Movie) => {
-  console.log(index, row)
+const handleDelete = (row: Movie) => {
+  AxiosHttp.delete('/api/movie/' + row.serial).then((res) => {
+    if (res) {
+      ElMessage.success('movie delete successfully')
+    }
+    initTableData()
+  }).catch((error) => {
+    ElMessage.error(error)
+  }).finally(() => {
+
+  })
 }
 const openPage = (url: string) => {
   window.open(url, '_blank');
 }
 
+onMounted(() => {
+  initTableData()
+})
 
+const initTableData = () => {
+  AxiosHttp.get('/api/movies').then(res => {
+    tableData.value = res.data;
+  }).catch((error) => {
+    console.log(error)
+  })
+}
 
-const tableData: Movie[] = [
-  {
-    serial: 'OKK-070',
-    url: 'https://missav.com/okk-070',
-    title: 'Inception',
-    actress: 'Ellen Page',
-    releaseDate: '2010-07-16',
-    collected: true,
-    playlist: 'mi',
-    type: 'Science Fiction',
-    description: 'A thief who enters the dreams of others to steal secrets from their subconscious.',
-    tag: ['Mind-bending', 'Action', 'Thriller']
-  },
-  {
-    serial: 'OKK-070',
-    url: 'https://missav.com/okk-070',
-    title: 'The Shawshank Redemption',
-    actress: 'Morgan Freeman',
-    releaseDate: '1994-09-23',
-    collected: true,
-    playlist: 'mi',
-    type: 'Drama',
-    description: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
-    tag: ['Redemption', 'Prison', 'Hope']
-  },
-  {
-    serial: 'OKK-070',
-    url: 'https://missav.com/okk-070',
-    title: 'The Dark Knight',
-    actress: 'Heath Ledger',
-    releaseDate: '2008-07-18',
-    collected: true,
-    playlist: 'mi',
-    type: 'Action',
-    description: 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.',
-    tag: ['Batman', 'Crime', 'Thriller']
-  },
-  {
-    serial: 'OKK-070',
-    url: 'https://missav.com/okk-070',
-    title: 'Forrest Gump',
-    actress: 'Tom Hanks',
-    releaseDate: '1994-07-06',
-    collected: true,
-    playlist: 'mi',
-    type: 'Drama',
-    description: 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.',
-    tag: ['Life', 'Love', 'Hope']
-  },
-];
+const handleParseUrl = () => {
+  isLoadingParse.value = true
+  AxiosHttp.post(`/api/movie/url`, {url: url.value}).then(res => {
+    if (res) {
+      ElMessage.success('URL parsed successfully')
+    }
+    initTableData()
+  }).catch((error) => {
+    ElMessage.error(error)
+    isLoadingParse.value = false
+  }).finally(() => {
+    isLoadingParse.value = false
+    url.value = null
+  })
+}
 
 </script>
